@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b8860b">
+<title>حسابداری لوستر</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--tx:#1d1d1b;--mut:#6b6b66;--bd:#dedcd4;--ac:#b8860b;--ok:#1a7f4b;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161614;--card:#222220;--tx:#f0efe8;--mut:#9a9990;--bd:#3a3a36;--ac:#e0a82e;--ok:#4cc38a;--bad:#ff7b6b}}
+:root[data-theme="dark"]{--bg:#161614;--card:#222220;--tx:#f0efe8;--mut:#9a9990;--bd:#3a3a36;--ac:#e0a82e;--ok:#4cc38a;--bad:#ff7b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Tahoma,"Vazirmatn",sans-serif;font-size:15px;padding:12px;max-width:640px;margin-inline:auto}
+h1{font-size:19px;margin:6px 0 12px}
+h2{font-size:15px;margin:0 0 10px;color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.f{display:flex;flex-direction:column;gap:3px}
+.f.w{grid-column:1/-1}
+label{font-size:12px;color:var(--mut)}
+input{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+input[readonly]{background:transparent;border-style:dashed;font-weight:bold}
+.auto label::after{content:" (خودکار)";color:var(--ac)}
+.fin{display:flex;justify-content:space-between;align-items:center;font-size:17px;font-weight:bold;padding:10px 0 4px}
+button{font:inherit;padding:11px 14px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac);width:100%;margin-top:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.item{border-top:1px solid var(--bd);padding:10px 0;display:flex;justify-content:space-between;gap:8px}
+.item:first-child{border-top:0}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.sm{font-size:12px;padding:6px 10px}.sum b{font-size:15px}.item{flex-wrap:wrap}.det{flex-basis:100%;white-space:pre-line;font-size:13px;color:var(--mut);line-height:1.9;background:var(--bg);border-radius:8px;padding:8px}
+.sum{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.sum b{display:block;font-size:17px}
+textarea{width:100%;height:80px;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px;direction:ltr}
+#pv{display:none}
+@media print{body>*:not(#pv){display:none!important}#pv{display:block!important;color:#000;background:#fff;font-size:12px}.pr{border:1px solid #999;border-radius:6px;padding:6px 8px;margin:0 0 6px;break-inside:avoid;white-space:pre-line;line-height:1.8}body{background:#fff;padding:0}}
+</style>
+</head>
+<body>
+<h1>حسابداری نصب لوستر و لامپ</h1>
+
+<div class="card sum">
+  <div><label>سود امروز</label><b id="sd">0</b></div>
+  <div><label>سود ماه جاری</label><b id="sm">0</b></div>
+  <div><label>سود کل</label><b id="st">0</b></div>
+</div>
+
+<div class="card">
+  <h2>صندوق بدهی به لامپ‌فروش</h2>
+  <div class="fin"><span>مانده بدهی</span><span id="db">0</span></div>
+  <div class="g">
+    <div class="f"><label>تاریخ تسویه</label><input id="dd" inputmode="numeric"></div>
+    <div class="f"><label>مبلغ تسویه (خالی = کل بدهی)</label><input id="da" type="number" inputmode="decimal"></div>
+  </div>
+  <button class="p" id="dbtn">تسویه حساب</button>
+  <div id="dm" style="font-size:12px;color:var(--bad);margin-top:4px"></div>
+  <div id="dl"></div>
+</div>
+
+<div class="card">
+  <h2>صندوق سود (برداشت)</h2>
+  <div class="fin"><span>موجودی سود</span><span id="pb">0</span></div>
+  <div class="g">
+    <div class="f"><label>تاریخ برداشت</label><input id="wd" inputmode="numeric"></div>
+    <div class="f"><label>مبلغ برداشت</label><input id="wa" type="number" inputmode="decimal"></div>
+  </div>
+  <button class="p" id="wbtn">ثبت برداشت</button>
+  <div id="wm" style="font-size:12px;color:var(--bad);margin-top:4px"></div>
+  <div id="wl"></div>
+</div>
+
+<div class="card">
+  <h2 id="ft">ثبت جدید</h2>
+  <div class="g">
+    <div class="f"><label>تاریخ</label><input id="date" inputmode="numeric"></div>
+    <div class="f"><label>نام مشتری</label><input id="cust"></div>
+  </div>
+
+  <h2 style="margin-top:14px">لوستر شاخه‌ای</h2>
+  <div class="g">
+    <div class="f"><label>تعداد شاخه</label><input id="bn" type="number" inputmode="decimal"></div>
+    <div class="f"><label>هزینه نصب هر شاخه</label><input id="bc" type="number" inputmode="decimal"></div>
+    <div class="f auto"><label>مجموع نصب شاخه‌ای</label><input id="bt" readonly></div>
+    <div class="f"><label>سود نصب شاخه‌ای</label><input id="bp" type="number" inputmode="decimal"></div>
+  </div>
+
+  <h2 style="margin-top:14px">لوستر سانتی</h2>
+  <div class="g">
+    <div class="f"><label>قطر (سانتی‌متر)</label><input id="dn" type="number" inputmode="decimal"></div>
+    <div class="f"><label>هزینه نصب هر سانتی‌متر</label><input id="dc" type="number" inputmode="decimal"></div>
+    <div class="f auto"><label>مجموع نصب سانتی</label><input id="dt" readonly></div>
+    <div class="f"><label>سود نصب سانتی</label><input id="dp" type="number" inputmode="decimal"></div>
+  </div>
+
+  <h2 style="margin-top:14px">هزینه متفرقه</h2>
+  <div class="g">
+    <div class="f"><label>نوع هزینه</label><input id="mt"></div>
+    <div class="f"><label>هزینه متفرقه</label><input id="mc" type="number" inputmode="decimal"></div>
+    <div class="f w"><label>سود هزینه متفرقه</label><input id="mp" type="number" inputmode="decimal"></div>
+  </div>
+
+  <h2 style="margin-top:14px">لامپ</h2>
+  <div class="g">
+    <div class="f"><label>نوع لامپ</label><input id="lt"></div>
+    <div class="f"><label>تعداد لامپ</label><input id="ln" type="number" inputmode="decimal"></div>
+    <div class="f"><label>قیمت فروش هر لامپ</label><input id="ls" type="number" inputmode="decimal"></div>
+    <div class="f"><label>قیمت خرید هر لامپ</label><input id="lb" type="number" inputmode="decimal"></div>
+    <div class="f auto"><label>مجموع فروش</label><input id="lst" readonly></div>
+    <div class="f auto"><label>مجموع خرید</label><input id="lbt" readonly></div>
+    <div class="f auto w"><label>سود فروش لامپ</label><input id="lp" readonly></div>
+  </div>
+
+  <div class="fin"><span>سود نهایی</span><span id="fp">0</span></div>
+  <button class="p" id="save">ذخیره</button>
+  <div class="row"><button id="cancel" style="display:none">لغو ویرایش</button></div>
+</div>
+
+<div class="card">
+  <h2>ثبت‌های قبلی</h2>
+  <input id="q" placeholder="جستجوی نام مشتری یا تاریخ...">
+  <div id="list" style="margin-top:8px"></div>
+</div>
+
+<div class="card">
+  <h2>گزارش</h2>
+  <div class="row" style="margin-top:0">
+    <button id="pdf">خروجی PDF (چاپ)</button>
+    <button id="rep">کپی گزارش متنی</button>
+  </div>
+  <textarea id="bk" placeholder="متن گزارش اینجا میاد"></textarea>
+  <div id="msg" style="font-size:12px;color:var(--mut);margin-top:4px"></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const dg=s=>String(s||"").replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d));
+const fa=s=>dg(s).replace(/[,٬،\s]/g,"").replace("٫",".");
+const NUM=["bn","bc","bp","dn","dc","dp","mc","mp","ln","ls","lb"];
+const N=id=>parseFloat(fa($(id).value))||0;
+const fmt=n=>Math.round(n).toLocaleString("en-US");
+const KEY="lustre-records-v1";
+let recs=[],editId=null;
+
+function load(){try{recs=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){recs=[]}}
+function store(){try{localStorage.setItem(KEY,JSON.stringify(recs))}catch(e){$("msg").textContent="ذخیره در حافظه گوشی نشد. بکاپ بگیر."}}
+
+function today(){
+  const p=new Intl.DateTimeFormat("en-US-u-ca-persian",{year:"numeric",month:"numeric",day:"numeric"}).formatToParts(new Date());
+  const g=t=>p.find(x=>x.type===t).value;
+  return g("year")+"/"+String(g("month")).padStart(2,"0")+"/"+String(g("day")).padStart(2,"0");
+}
+
+function calc(){
+  const bt=N("bn")*N("bc"), dt=N("dn")*N("dc");
+  const lst=N("ln")*N("ls"), lbt=N("ln")*N("lb"), lp=lst-lbt;
+  const fp=N("bp")+N("dp")+N("mp")+lp;
+  $("bt").value=fmt(bt);$("dt").value=fmt(dt);
+  $("lst").value=fmt(lst);$("lbt").value=fmt(lbt);$("lp").value=fmt(lp);
+  $("fp").textContent=fmt(fp);
+  $("fp").className=fp<0?"neg":"pos";
+  return {bt,dt,lst,lbt,lp,fp};
+}
+
+const IDS=["date","cust","bn","bc","bp","dn","dc","dp","mt","mc","mp","lt","ln","ls","lb"];
+IDS.forEach(i=>$(i).addEventListener("input",calc));
+
+function clearForm(){
+  IDS.forEach(i=>$(i).value="");
+  $("date").value=today();
+  editId=null;$("ft").textContent="ثبت جدید";$("save").textContent="ذخیره";$("cancel").style.display="none";
+  calc();
+}
+
+$("save").onclick=()=>{
+  const c=calc();
+  const r={id:editId||Date.now(),calc:c};
+  IDS.forEach(i=>r[i]=NUM.includes(i)?fa($(i).value):i==="date"?dg($(i).value):$(i).value);
+  if(editId){recs=recs.map(x=>x.id===editId?r:x)}else{recs.unshift(r)}
+  store();clearForm();render();
+};
+$("cancel").onclick=clearForm;
+
+function edit(id){
+  const r=recs.find(x=>x.id===id);if(!r)return;
+  IDS.forEach(i=>$(i).value=r[i]||"");
+  editId=id;$("ft").textContent="ویرایش ثبت";$("save").textContent="ذخیره تغییرات";$("cancel").style.display="";
+  calc();window.scrollTo({top:0,behavior:"smooth"});
+}
+function ask(msg,yes){
+  const o=document.createElement("div");
+  o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:99;padding:20px";
+  const c=document.createElement("div");c.className="card";c.style.cssText="max-width:320px;width:100%;margin:0";
+  const p=document.createElement("div");p.textContent=msg;p.style.marginBottom="12px";
+  const r=document.createElement("div");r.className="row";r.style.marginTop="0";
+  const y=document.createElement("button");y.textContent="بله، حذف کن";y.style.cssText="background:var(--bad);color:#fff;border-color:var(--bad)";
+  const n=document.createElement("button");n.textContent="لغو";
+  y.onclick=()=>{o.remove();yes()};n.onclick=()=>o.remove();
+  r.append(y,n);c.append(p,r);o.append(c);document.body.append(o);
+}
+function del(id){
+  ask("این ثبت پاک بشه؟",()=>{recs=recs.filter(x=>x.id!==id);store();render()});
+}
+
+function det(r){const c=r.calc,L=[];
+  if(+r.bn||+r.bc||+r.bp)L.push("شاخه‌ای: "+(r.bn||0)+" شاخه × "+fmt(+r.bc||0)+" = "+fmt(c.bt)+" | سود: "+fmt(+r.bp||0));
+  if(+r.dn||+r.dc||+r.dp)L.push("سانتی: "+(r.dn||0)+" سانتی‌متر × "+fmt(+r.dc||0)+" = "+fmt(c.dt)+" | سود: "+fmt(+r.dp||0));
+  if(r.mt||+r.mc||+r.mp)L.push("متفرقه ("+(r.mt||"-")+"): "+fmt(+r.mc||0)+" | سود: "+fmt(+r.mp||0));
+  if(+r.ln)L.push("لامپ "+(r.lt||"")+": "+r.ln+" عدد | فروش "+fmt(c.lst)+" | خرید "+fmt(c.lbt)+" | سود: "+fmt(c.lp));
+  L.push("سود نهایی: "+fmt(c.fp));
+  return L.join("\n");
+}
+function render(){
+  renderBoxes();const q=$("q").value.trim();
+  const mon=today().slice(0,7);
+  let sm=0,st=0,sd=0;const td=today();
+  recs.forEach(r=>{st+=r.calc.fp;if((r.date||"").slice(0,7)===mon)sm+=r.calc.fp;if(r.date===td)sd+=r.calc.fp});
+  $("sm").textContent=fmt(sm);$("sd").textContent=fmt(sd);$("st").textContent=fmt(st);
+  const L=recs.filter(r=>!q||(r.cust||"").includes(q)||(r.date||"").includes(q));
+  $("list").innerHTML=L.length?(q?'<div style="font-size:13px;color:var(--ac)">'+L.length+" ثبت | جمع سود: "+fmt(L.reduce((s,r)=>s+r.calc.fp,0))+"</div>":""):'<div style="color:var(--mut)">ثبتی نیست.</div>';
+  L.forEach(r=>{
+    const d=document.createElement("div");d.className="item";
+    const a=document.createElement("div");
+    a.innerHTML="<b></b><div style='font-size:12px;color:var(--mut)'></div>";
+    a.firstChild.textContent=r.cust||"بدون نام";
+    a.lastChild.textContent=r.date+" | سود: "+fmt(r.calc.fp);
+    const b=document.createElement("div");b.className="row";b.style.margin="0";
+    const e=document.createElement("button");e.className="sm";e.textContent="ویرایش";e.onclick=()=>edit(r.id);
+    const x=document.createElement("button");x.className="sm";x.textContent="حذف";x.onclick=()=>del(r.id);
+    const v=document.createElement("button");v.className="sm";v.textContent="جزئیات";
+    const t=document.createElement("div");t.className="det";t.textContent=det(r);t.style.display=q?"block":"none";
+    v.onclick=()=>{t.style.display=t.style.display==="none"?"block":"none"};
+    b.append(v,e,x);d.append(a,b,t);$("list").append(d);
+  });
+}
+$("q").addEventListener("input",render);
+
+
+const PK="lustre-pay-v1";let pays=[];
+function loadP(){try{pays=JSON.parse(localStorage.getItem(PK)||"[]")}catch(e){pays=[]}}
+function storeP(){try{localStorage.setItem(PK,JSON.stringify(pays))}catch(e){}}
+function bal(){let b=0,p=0,pd=0,pw=0;
+  recs.forEach(r=>{b+=r.calc.lbt;p+=r.calc.fp});
+  pays.forEach(x=>{if(x.k==="d")pd+=x.a;else pw+=x.a});
+  return {debt:b-pd,prof:p-pw};
+}
+function renderBoxes(){
+  const B=bal();
+  $("db").textContent=fmt(B.debt);$("pb").textContent=fmt(B.prof);
+  $("db").className=B.debt>0.5?"neg":"pos";$("pb").className=B.prof<0?"neg":"pos";
+  ["d","w"].forEach(k=>{
+    const el=$(k+"l");el.innerHTML="";
+    pays.filter(x=>x.k===k).forEach(x=>{
+      const d=document.createElement("div");d.className="item";
+      const s=document.createElement("span");s.textContent=x.d+" | "+fmt(x.a);
+      const b=document.createElement("button");b.className="sm";b.textContent="حذف";
+      b.onclick=()=>ask("این مورد پاک بشه؟",()=>{pays=pays.filter(y=>y.id!==x.id);storeP();render()});
+      d.append(s,b);el.append(d);
+    });
+  });
+}
+function pay(k){
+  const m=$(k+"m"),B=bal(),max=k==="d"?B.debt:B.prof;
+  let a=parseFloat(fa($(k+"a").value));
+  if(!a&&k==="d")a=max;
+  if(!(a>0)){m.textContent=k==="d"?"بدهی‌ای نیست.":"مبلغ رو وارد کن.";return}
+  if(a>max+0.5){m.textContent="مبلغ از موجودی بیشتره ("+fmt(max)+").";return}
+  pays.unshift({id:Date.now(),k:k,d:dg($(k+"d").value)||today(),a:a});storeP();
+  $(k+"a").value="";$(k+"d").value=today();m.textContent="";render();
+}
+function reportData(){
+  const B=bal();let tp=0;recs.forEach(r=>tp+=r.calc.fp);
+  const H=["گزارش حسابداری لوستر | تاریخ: "+today(),"تعداد ثبت: "+recs.length+" | سود کل: "+fmt(tp),"مانده بدهی به لامپ‌فروش: "+fmt(B.debt)+" | موجودی سود: "+fmt(B.prof)];
+  const R=recs.slice().sort((a,b)=>(a.date||"")<(b.date||"")?-1:1).map((r,i)=>(i+1)+". "+(r.cust||"بدون نام")+" | "+r.date+"\n"+det(r));
+  const P=k=>pays.filter(x=>x.k===k).map(x=>x.d+" | "+fmt(x.a));
+  return {H:H,R:R,D:P("d"),W:P("w")};
+}
+$("pdf").onclick=()=>{
+  const d=reportData();let pv=$("pv");
+  if(!pv){pv=document.createElement("div");pv.id="pv";document.body.append(pv)}
+  pv.innerHTML="";
+  const add=(t,bold)=>{const e=document.createElement("div");e.className="pr";if(bold)e.style.fontWeight="bold";e.textContent=t;pv.append(e)};
+  add(d.H.join("\n"),1);d.R.forEach(t=>add(t));
+  if(d.D.length)add("تسویه‌های لامپ‌فروش:\n"+d.D.join("\n"));
+  if(d.W.length)add("برداشت‌های سود:\n"+d.W.join("\n"));
+  try{window.print()}catch(e){$("msg").textContent="چاپ بلاک شد. «کپی گزارش متنی» رو بزن."}
+};
+$("rep").onclick=async()=>{
+  const d=reportData();
+  const t=[d.H.join("\n"),"",d.R.join("\n\n"),"","تسویه‌های لامپ‌فروش:\n"+d.D.join("\n"),"","برداشت‌های سود:\n"+d.W.join("\n")].join("\n");
+  $("bk").value=t;
+  try{await navigator.clipboard.writeText(t);$("msg").textContent="گزارش کپی شد."}catch(e){$("bk").select();$("msg").textContent="متن بالا رو دستی کپی کن."}
+};
+$("dbtn").onclick=()=>pay("d");$("wbtn").onclick=()=>pay("w");
+document.querySelectorAll("input[type=number]").forEach(i=>{i.type="text"});
+try{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')}catch(e){}
+load();loadP();clearForm();$("dd").value=$("wd").value=today();render();
+</script>
+</body>
+</html>
